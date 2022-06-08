@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+
+  fuel_parser:
+    build: .
+    image: fuel_parser:1.0.0
+    container_name: fuel_parser
