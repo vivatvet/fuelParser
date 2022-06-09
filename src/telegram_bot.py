@@ -33,11 +33,10 @@ def message_handler(update: Update, context: CallbackContext):
     else:
         cmd = cmd.text
     update.effective_chat.unpin_all_messages()
-    match cmd:
-        case "/add" | "/start":
-            add_azs(update=update, context=context)
-        case "/del":
-            del_azs(update=update, context=context)
+    if cmd == "/add" or cmd == "/start":
+        add_azs(update=update, context=context)
+    elif cmd == "/del":
+        del_azs(update=update, context=context)
 
 
 def start_bot():

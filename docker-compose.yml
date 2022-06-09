@@ -4,5 +4,13 @@ services:
 
   fuel_parser:
     build: .
-    image: fuel_parser:1.0.0
+    image: fuel_parser:1.0.1
     container_name: fuel_parser
+    environment:
+      BOT_TOKEN: ""
+      DATABASE_PATH: /app/database.db
+    command: ["python", "/app/main.py"]
+    volumes:
+      - type: bind
+        source: ./database.db
+        target: /app/database.db
