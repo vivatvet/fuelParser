@@ -41,6 +41,7 @@ def check_fuel():
                                     if user[0] not in notify_users:
                                         notify_users.append(user[0])
                                         notify[a[0]] = notify_users
+                    fuels[azs["id"]] = azs["FuelsAsArray"]
     for azs in azs_list_json["data"]:
         for azs_id, users in notify.items():
             if azs["id"] == azs_id:
