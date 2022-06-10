@@ -43,6 +43,8 @@ def check_fuel():
         if fuel_was_changed:
             azs_changed[azs["id"]] = azs
 
+        fuels[azs["id"]] = azs["FuelsAsArray"]
+
     for user in users:
         azs_list = [au[0] for au in orm.get_subscribed_azs(user_id=user[0])]
         for azs_id, azs in azs_changed.items():
