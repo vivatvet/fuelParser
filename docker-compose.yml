@@ -8,9 +8,9 @@ services:
     container_name: fuel_parser
     environment:
       BOT_TOKEN: ""
-      DATABASE_PATH: /app/database.db
+      DATABASE_PATH: /app/database/database.db
     command: ["python", "/app/main.py"]
     volumes:
       - type: bind
-        source: ./database.db
-        target: /app/database.db
+        source: ./database
+        target: /app/database
