@@ -29,15 +29,19 @@ def check_fuel():
         if not fuels.get(azs["id"]):
             fuels[azs["id"]] = azs["FuelsAsArray"]
             continue
-        notify_users = []
-        for user in users:
-            azs_list = orm.get_subscribed_azs(user_id=user[0])
-            for a in azs_list:
-                if a[0] == azs["id"]:
-                    for fuel in fuels[azs["id"]]:
-                        for f in azs["FuelsAsArray"]:
-                            if f["id"] == fuel["id"]:
-                                if fuel["Price"] != f["Price"]:
+        for fuel in fuels.get(azs["id"]):
+            azs_was_change = False
+            for f in azs.get("FuelsAsArray"):
+                if f["id"] == fuel["id"]:
+                    if azs_was_change:
+                        continue
+                    if fuel["Price"] != f["Price"]:
+                        notify_users = []
+                        azs_was_change = True
+                        for user in users:
+                            azs_list = orm.get_subscribed_azs(user_id=user[0])
+                            for a in azs_list:
+                                if a[0] == azs["id"]:
                                     if user[0] not in notify_users:
                                         notify_users.append(user[0])
                                         notify[a[0]] = notify_users
