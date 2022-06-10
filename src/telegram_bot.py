@@ -50,15 +50,11 @@ def start_bot():
     updater.start_polling()
 
 
-def send_msg(msg: str):
-    orm = Orm()
-    users = orm.get_users()
-    for user in users:
-        user_id: int = user[0]
-        try:
-            t_bot.send_message(chat_id=user_id, text=msg)
-        except telegram.error.BadRequest as e:
-            print("telegram error", e)
+def send_msg(user_id: int, msg: str):
+    try:
+        t_bot.send_message(chat_id=user_id, text=msg)
+    except telegram.error.BadRequest as e:
+        print("telegram error", e)
 
 
 def add_azs(update: Update, context: CallbackContext):

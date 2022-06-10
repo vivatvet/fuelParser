@@ -20,37 +20,35 @@ fuels = {}
 #             print("=" * 22)
 
 
+def is_fuel_changed(saved: dict, current: dict) -> bool:
+    for saved_fuel in saved:
+        for current_fuel in current:
+            if current_fuel["id"] == saved_fuel["id"]:
+                if current_fuel["Price"] != saved_fuel["Price"]:
+                    return True
+    return False
+
+
 def check_fuel():
     orm = Orm()
     azs_list_json = MyHTMLParser().get_azs()
     users = orm.get_users()
-    notify = {}
+    azs_changed = {}
     for azs in azs_list_json["data"]:
         if not fuels.get(azs["id"]):
             fuels[azs["id"]] = azs["FuelsAsArray"]
             continue
-        for fuel in fuels.get(azs["id"]):
-            azs_was_change = False
-            for f in azs.get("FuelsAsArray"):
-                if f["id"] == fuel["id"]:
-                    if azs_was_change:
-                        continue
-                    if fuel["Price"] != f["Price"]:
-                        notify_users = []
-                        azs_was_change = True
-                        for user in users:
-                            azs_list = orm.get_subscribed_azs(user_id=user[0])
-                            for a in azs_list:
-                                if a[0] == azs["id"]:
-                                    if user[0] not in notify_users:
-                                        notify_users.append(user[0])
-                                        notify[a[0]] = notify_users
-        fuels[azs["id"]] = azs["FuelsAsArray"]
-    for azs in azs_list_json["data"]:
-        for azs_id, users in notify.items():
-            if azs["id"] == azs_id:
+        fuel_was_changed = is_fuel_changed(fuels.get(azs["id"]), azs.get("FuelsAsArray"))
+
+        if fuel_was_changed:
+            azs_changed[azs["id"]] = azs
+
+    for user in users:
+        azs_list = [au[0] for au in orm.get_subscribed_azs(user_id=user[0])]
+        for azs_id, azs in azs_changed.items():
+            if azs_id in azs_list:
                 prices = "\n".join([a["Title"] + " ---- " + a["Price"] for a in azs["FuelsAsArray"]])
-                telegram_bot.send_msg(msg=f'{azs["FullName"]}\n{azs["Address"]}\n{prices}')
+                telegram_bot.send_msg(user_id=user, msg=f'{azs["FullName"]}\n{azs["Address"]}\n{prices}')
 
 
 telegram_bot.start_bot()
