@@ -50,7 +50,7 @@ def check_fuel():
         for azs_id, azs in azs_changed.items():
             if azs_id in azs_list:
                 prices = "\n".join([a["Title"] + " ---- " + a["Price"] for a in azs["FuelsAsArray"]])
-                telegram_bot.send_msg(user_id=user, msg=f'{azs["FullName"]}\n{azs["Address"]}\n{prices}')
+                telegram_bot.send_msg(user_id=user[0], msg=f'{azs["FullName"]}\n{azs["Address"]}\n{prices}')
 
 
 telegram_bot.start_bot()
