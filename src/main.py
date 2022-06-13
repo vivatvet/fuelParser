@@ -1,4 +1,3 @@
-import pprint
 from site_parser import get_azs
 import schedule
 import time
@@ -46,13 +45,11 @@ def check_fuel():
 
         fuels[azs["id"]] = azs["FuelsAsArray"]
 
-    pprint.pprint(azs_changed)
     for user in users:
         azs_list = [au[0] for au in orm.get_subscribed_azs(user_id=user[0])]
         for azs_id, azs in azs_changed.items():
             if azs_id in azs_list:
                 prices = "\n".join([a["Title"] + " ---- " + a["Price"] for a in azs["FuelsAsArray"]])
-                print("TELEGRAM", azs_id)
                 telegram_bot.send_msg(user_id=user[0], msg=f'{azs["FullName"]}\n{azs["Address"]}\n{prices}')
 
 
