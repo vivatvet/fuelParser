@@ -1,4 +1,5 @@
-from site_parser import MyHTMLParser
+import pprint
+from site_parser import get_azs
 import schedule
 import time
 import telegram_bot
@@ -31,7 +32,7 @@ def is_fuel_changed(saved: dict, current: dict) -> bool:
 
 def check_fuel():
     orm = Orm()
-    azs_list_json = MyHTMLParser().get_azs()
+    azs_list_json = get_azs()
     users = orm.get_users()
     azs_changed = {}
     for azs in azs_list_json["data"]:
@@ -45,11 +46,13 @@ def check_fuel():
 
         fuels[azs["id"]] = azs["FuelsAsArray"]
 
+    pprint.pprint(azs_changed)
     for user in users:
         azs_list = [au[0] for au in orm.get_subscribed_azs(user_id=user[0])]
         for azs_id, azs in azs_changed.items():
             if azs_id in azs_list:
                 prices = "\n".join([a["Title"] + " ---- " + a["Price"] for a in azs["FuelsAsArray"]])
+                print("TELEGRAM", azs_id)
                 telegram_bot.send_msg(user_id=user[0], msg=f'{azs["FullName"]}\n{azs["Address"]}\n{prices}')
 
 
