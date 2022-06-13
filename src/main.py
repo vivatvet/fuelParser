@@ -31,14 +31,22 @@ def is_fuel_changed(saved: dict, current: dict) -> bool:
 
 def check_fuel():
     orm = Orm()
-    azs_list_json = get_azs()
+    try:
+        azs_list_json = get_azs()
+    except Exception as e:
+        print(e, flush=True)
+        return True
     users = orm.get_users()
     azs_changed = {}
     for azs in azs_list_json["data"]:
         if not fuels.get(azs["id"]):
             fuels[azs["id"]] = azs["FuelsAsArray"]
             continue
-        fuel_was_changed = is_fuel_changed(fuels.get(azs["id"]), azs.get("FuelsAsArray"))
+        try:
+            fuel_was_changed = is_fuel_changed(fuels.get(azs["id"]), azs.get("FuelsAsArray"))
+        except Exception as e:
+            print(e, flush=True)
+            return True
 
         if fuel_was_changed:
             azs_changed[azs["id"]] = azs
