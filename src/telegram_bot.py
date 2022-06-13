@@ -3,7 +3,7 @@ from telegram import Update
 import env
 from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandler, Filters
 from orm import Orm
-from site_parser import MyHTMLParser
+from site_parser import get_azs
 
 t_bot = telegram.Bot(token=env.bot_token)
 
@@ -61,7 +61,7 @@ def add_azs(update: Update, context: CallbackContext):
     user_id: int = update.effective_user.id
     number: str = update.message.text.strip()
     orm = Orm()
-    azs_list = MyHTMLParser().get_azs()
+    azs_list = get_azs()
     for azs in azs_list["data"]:
         n_azs = azs['FullName'].split("№")[1].split(" ")[0]
         if number == n_azs:
@@ -84,7 +84,7 @@ def del_azs(update: Update, context: CallbackContext):
     user_id: int = update.effective_user.id
     number: str = update.message.text.strip()
     orm = Orm()
-    azs_list = MyHTMLParser().get_azs()
+    azs_list = get_azs()
     for azs in azs_list["data"]:
         n_azs = azs['FullName'].split("№")[1].split(" ")[0]
         if number == n_azs:
