@@ -21,6 +21,12 @@ fuels = {}
 
 
 def is_fuel_changed(saved: dict, current: dict) -> bool:
+    if not saved:
+        saved = {}
+    if not current:
+        current = {}
+    if len(saved) != len(current):
+        return True
     for saved_fuel in saved:
         for current_fuel in current:
             if current_fuel["id"] == saved_fuel["id"]:
@@ -46,7 +52,7 @@ def check_fuel():
             fuel_was_changed = is_fuel_changed(fuels.get(azs["id"]), azs.get("FuelsAsArray"))
         except Exception as e:
             print(e, flush=True)
-            return True
+            fuel_was_changed = True
 
         if fuel_was_changed:
             azs_changed[azs["id"]] = azs
