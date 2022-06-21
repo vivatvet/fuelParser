@@ -1,3 +1,5 @@
+import json
+import requests
 from site_parser import get_azs
 import schedule
 import time
@@ -5,6 +7,7 @@ import telegram_bot
 from orm import Orm
 
 fuels = {}
+fuels_wog = {}
 
 # id_list = [106]  # , 101, 149, 128, 142, 145, 146, 134]
 #
@@ -67,9 +70,40 @@ def check_fuel():
                 telegram_bot.send_msg(user_id=user[0], msg=f'{azs["FullName"]}\n{azs["Address"]}\n{prices}')
 
 
+def check_fuel_wog():
+    orm = Orm()
+    subscribed = orm.get_wog_subscribed()
+    for subscribe in subscribed:
+        user = subscribe[0]
+        azs_id = subscribe[1]
+        res = requests.get("https://api.wog.ua/fuel_stations/" + str(azs_id))
+        try:
+            res_json = json.loads(res.text)
+        except Exception as e:
+            print(e, flush=True)
+            return True
+        try:
+            name_azs = res_json["data"]["name"]
+        except Exception as e:
+            print(e, flush=True)
+            return True
+        try:
+            fuels_desc = res_json["data"]["workDescription"]
+        except Exception as e:
+            print(e, flush=True)
+            return True
+        if not fuels_wog.get(user):
+            fuels_wog[user] = {}
+        if fuels_wog[user].get(azs_id) != fuels_desc:
+            telegram_bot.send_msg(user_id=user, msg=f"WOG: {name_azs} Changed:\n {fuels_desc}")
+
+        fuels_wog[user][azs_id] = fuels_desc
+
+
 telegram_bot.start_bot()
 
 schedule.every(5).minutes.do(check_fuel)
+schedule.every(5).minutes.do(check_fuel_wog)
 while True:
     schedule.run_pending()
     time.sleep(1)

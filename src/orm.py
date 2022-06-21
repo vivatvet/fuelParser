@@ -24,6 +24,15 @@ class Subscribed(Base):
     azs_id = Column(Integer)
 
 
+class SubscribedWOG(Base):
+    __tablename__ = 'subscribed_wog'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    name = Column(String)
+    azs_id = Column(Integer)
+
+
 class Orm:
 
     def __init__(self):
@@ -69,3 +78,9 @@ class Orm:
         find_azs = session.query(Subscribed.azs_id, Subscribed.address, Subscribed.full_name).filter(Subscribed.user_id == user_id).all()
         session.close()
         return find_azs
+
+    def get_wog_subscribed(self):
+        session = Session(bind=self.engine)
+        subscribed = session.query(SubscribedWOG.user_id, SubscribedWOG.azs_id).all()
+        session.close()
+        return subscribed
