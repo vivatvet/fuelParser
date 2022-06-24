@@ -76,7 +76,11 @@ def check_fuel_wog():
     for subscribe in subscribed:
         user = subscribe[0]
         azs_id = subscribe[1]
-        res = requests.get("https://api.wog.ua/fuel_stations/" + str(azs_id))
+        try:
+            res = requests.get("https://api.wog.ua/fuel_stations/" + str(azs_id))
+        except Exception as e:
+            print(e, flush=True)
+            return True
         try:
             res_json = json.loads(res.text)
         except Exception as e:
